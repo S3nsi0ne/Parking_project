@@ -1,0 +1,2 @@
+class TimeException(Exception):
+    pass
