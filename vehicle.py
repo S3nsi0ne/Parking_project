@@ -8,6 +8,7 @@ class Vehicle(ABC):
         self.plate = plate
         self.color = color
         self.owner = owner
+        self.is_entered = False
 
     @abstractmethod
     def get_price(self):

@@ -1,7 +1,7 @@
 from exceptions import TimeException
 from datetime import datetime
 # 
-class subscription:
+class Subscription:
     discount = 0.2
 
     def __init__(self, start, end, status="active"):
