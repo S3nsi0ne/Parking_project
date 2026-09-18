@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
 
-#--------------Vehicle-----------
+# --------------Vehicle-----------
+
 
 class Vehicle(ABC):
+    def __init__(self, plate, color, owner):
+        self.plate = plate
+        self.color = color
+        self.owner = owner
 
     @abstractmethod
     def get_price(self):
