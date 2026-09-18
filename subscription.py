@@ -4,10 +4,11 @@ from datetime import datetime
 class Subscription:
     discount = 0.2
 
-    def __init__(self, start, end, status="active"):
+    def __init__(self, start, end, subscription_id ,  status="active"):
         self.start = start
         self.end = end
         self.status = status
+        self.subscription_id = subscription_id
 
     def calculat(self,price,duration):
         today=datetime.now()

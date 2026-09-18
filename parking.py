@@ -1,7 +1,10 @@
 # data mangling
+from CW.carRentalAgency.rentalAgency import Vehicle
+from exceptions import *
 from datetime import datetime
+
+from CW.CW_ParkingProject.exceptions import DuplicatePlate, ExitingInParking
 from vehicle import Car, Van, MotorCycle
-from Library.bin.qtpy2cpp_lib.astdump import parse_ast
 
 
 class ParkingSession:
@@ -15,6 +18,8 @@ class ParkingSession:
 
     def session_time(self):
         self.end_time = datetime.now()
+        if self.end_time < self.start_time:
+            raise TimeException
         duration = self.end_time - self.start_time
         total_hours = int(duration.total_seconds() / 3600)
         return total_hours
@@ -46,7 +51,7 @@ class Parking:
             print("car not registered")
 
         if car.is_entered:
-            return "car already entered"
+            raise ExitingInParking("car already entered")
         car.is_entered = True
 
         spot = self.__find_empty_spot()
@@ -58,22 +63,30 @@ class Parking:
 
         # update spot
         spot.update_spot()
+        print(f"car entered in {spot.spot_id}")
+        return session1
 
     def register_car(self, car):
         if car.plate in self.vehicles.keys():
             print("car already registered")
+            raise DuplicatePlate
         else:
             self.vehicles[car.plate] = car
 
+
     def __find_empty_spot(self):
+        print(self.spots)
         for spot in self.spots:
+            print(spot.is_empty)
             if spot.is_empty:
                 return spot
 
+
     def exit(self, parking_session: ParkingSession, subscription_id):
         # check car in parking
-        __check_car_in_parking
-            return "car not in parking"
+        if not self.__check_car_in_parking(parking_session):
+            raise NoneExistingInParking("car is not in parking")
+
 
         # calculate session time
         session_time = parking_session.session_time()
@@ -96,6 +109,7 @@ class Parking:
 
         # update spot
         parking_session.spot.update_spot()
+        print("car exited")
 
     def __check_car_in_parking(self, parking_session):
         
@@ -108,13 +122,15 @@ class Parking:
         # time - price - discount - spot
         cost = spot.price * duration
         discount_dict = spot.discount
-        if isinstance(car, Car):
+
+        if car.__class__.__name__ == "Car":
             discount = discount_dict["car"]
-        elif isinstance(car, MotorCycle):
+        elif car.__class__.__name__ == "Motor":
             discount = discount_dict["motor"]
-        elif isinstance(car, Van):
+        elif car.__class__.__name__ == "Van":
             discount = discount_dict["van"]
 
+        print(discount)
         final_cost = cost * (1 - discount)
 
         return final_cost
@@ -137,13 +153,18 @@ class Parking:
         self.spots.append(spot)
 
     def change_spot_id(self,new_spot_id,parking_session):
+
         new_spot=self.__check_new_spot(new_spot_id)
-        if self.__is_spot_empty(new_spot) :
+        try:
+            self.__is_spot_empty(new_spot)
             old_spot=parking_session.spot
             parking_session.spot=new_spot
 
             old_spot.update.spot()
             new_spot.update.spot()
+
+        except InvalidSpot:
+            print("Spot is not available")
 
 
     def __check_new_spot(self,new_spot_id):
@@ -153,7 +174,8 @@ class Parking:
         return None
 
     def __is_spot_empty(self,new_spot):
-        return bool(new_spot.is_empty)
+        if not new_spot.is_empty:
+            raise InvalidSpot
 
 
             
@@ -161,6 +183,10 @@ class Parking:
     def show_all_car_in_parking(self):
         for car in self.vehicles.values():
             print(car)
+
+    def add_subscribe(self, subscribe):
+        self.subscriptions[subscribe.subscription_id] = subscribe
+
 
 
 class Owner:
@@ -172,7 +198,7 @@ class Owner:
         self.car = []
 
     def add_car(self, car):
-        pass
+        self.car.append(car)
 
     def remove_car(self, car):
-        pass
+        self.car.remove(car)

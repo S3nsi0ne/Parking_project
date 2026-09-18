@@ -1,7 +1,7 @@
 class ParkingSpot:
     def __init__(self, spot_id):
         self.is_active = True
-        self.is_empty = False
+        self.is_empty = True
         self.spot_id = spot_id
 
     def update_spot(self):
