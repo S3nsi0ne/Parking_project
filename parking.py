@@ -69,7 +69,7 @@ class Parking:
 
     def exit(self, parking_session: ParkingSession,subscription_id):
         # check car in parking
-        if not parking_session.car.is_entered:
+        __check_car_in_parking
             return "car not in parking"
 
         # calculate session time
@@ -83,20 +83,25 @@ class Parking:
             duration=session_time
             )
         else:
-            cost=self.calculate()
-
+            cost=self.calculate(
+                duration = session_time,
+                spot = parking_session.spot,
+                car = parking_session.car
+            )
 
         # payment
         self.payment(cost)
-
-
 
         # update spot
         parking_session.spot.update_spot()
     
 
-    def __check_car_in_parking(self):
-        pass
+    def __check_car_in_parking(self, parking_session):
+        
+        if not parking_session.car.is_entered:
+            return False
+        return True
+    
 
     def calculate(self,duration,spot,car):
         # time - price - discount - spot
@@ -116,8 +121,9 @@ class Parking:
 
     
 
-    def payment(self):
-        pass
+    def payment(self, cost):
+        print(f"{cost} was payed.")
+        # Todo: report
 
     def register_owner(self):
         pass
