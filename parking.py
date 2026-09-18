@@ -1,6 +1,6 @@
 # data mangling
 from datetime import datetime
-
+from vehicle import Car , Van , MotorCycle
 from Library.bin.qtpy2cpp_lib.astdump import parse_ast
 class ParkingSession:
 
@@ -67,7 +67,7 @@ class Parking:
             if spot.is_empty:
                 return spot
 
-    def exit(self, parking_session: ParkingSession):
+    def exit(self, parking_session: ParkingSession,subscription_id):
         # check car in parking
         if not parking_session.car.is_entered:
             return "car not in parking"
@@ -76,15 +76,45 @@ class Parking:
         session_time = parking_session.session_time()
 
         # calculate price/cost
+        subscription=self.subscriptions.get(subscription_id,None)
+        if subscription:
+            cost=subscription.calculat(
+            price=parking_session.spot.price,
+            duration=session_time
+            )
+        else:
+            cost=self.calculate()
+
+
         # payment
+        self.payment(cost)
+
+
+
         # update spot
+        parking_session.spot.update_spot()
+    
 
     def __check_car_in_parking(self):
         pass
 
-    def calculate(self):
+    def calculate(self,duration,spot,car):
         # time - price - discount - spot
-        pass
+        cost=spot.price*duration
+        discount_dict=spot.discount
+        if isinstance(car,Car):
+            discount=discount_dict["car"]
+        elif isinstance(car,MotorCycle):
+            discount=discount_dict["motor"]
+        elif isinstance(car,Van):
+            discount=discount_dict["van"]
+
+        final_cost=cost * (1-discount)
+
+        return final_cost
+
+
+    
 
     def payment(self):
         pass

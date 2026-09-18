@@ -18,7 +18,6 @@ class Regular(ParkingSpot):
         self.discount={"motor":15,"car":30,"van":45}
 
 
-
 class Vip(ParkingSpot):
     def __init__(self, spot_id,price):
         super().__init__(spot_id)
